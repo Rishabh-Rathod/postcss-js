@@ -50,12 +50,16 @@ function process (node) {
       }
     } else if (child.type === 'rule') {
       let body = process(child)
-      if (result[child.selector]) {
+      let selectorName = child.selector
+      if (selectorName[0] === '.') {
+        selectorName = selectorName.substr(1)
+      }
+      if (result[selectorName]) {
         for (let i in body) {
-          result[child.selector][i] = body[i]
+          result[selectorName][i] = body[i]
         }
       } else {
-        result[child.selector] = body
+        result[selectorName] = body
       }
     } else if (child.type === 'decl') {
       if (child.prop[0] === '-' && child.prop[1] === '-') {
