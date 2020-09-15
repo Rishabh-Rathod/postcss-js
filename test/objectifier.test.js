@@ -133,3 +133,10 @@ it('converts unitless value to number instead of string', () => {
     opacity: 0.1
   })
 })
+
+it('remove period `.` from css classname', () => {
+  let root = parse('.button{ color: black; }')
+  expect(postcssJS.objectify(root)).toEqual({
+    button: { color: 'black' }
+  })
+})
