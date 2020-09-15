@@ -140,3 +140,35 @@ it('remove period `.` from css classname', () => {
     button: { color: 'black' }
   })
 })
+
+it('css Pseudo Classes support', () => {
+  let root = parse(
+    `/* unvisited link */
+    a:link {
+      color: green;
+    }
+    
+    /* visited link */
+    a:visited {
+      color: green;
+    }
+    
+    /* mouse over link */
+    a:hover {
+      color: red;
+    }
+    
+    /* selected link */
+    a:active {
+      color: yellow;
+    }`
+  )
+  expect(postcssJS.objectify(root)).toEqual({
+    a: {
+      '&:hover': { color: 'red' },
+      '&:active': { color: 'yellow' },
+      '&:visited': { color: 'green' },
+      '&:link': { color: 'green' }
+    }
+  })
+})
