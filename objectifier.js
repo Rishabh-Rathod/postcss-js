@@ -51,10 +51,29 @@ function process (node) {
     } else if (child.type === 'rule') {
       let body = process(child)
       let selectorName = child.selector
-      if (selectorName[0] === '.') {
+      let subSelectorName = ''
+      if (selectorName.includes(':')) {
+        let [className, subSelector] = selectorName.split(':')
+        if (className !== '&') {
+          selectorName = className
+          subSelectorName = `&:${subSelector}`
+        }
+      }
+      if (selectorName.length > 0 && selectorName[0] === '.') {
         selectorName = selectorName.substr(1)
       }
-      if (result[selectorName]) {
+      if (subSelectorName) {
+        if (result[selectorName]) {
+          result[selectorName][subSelectorName] = {}
+        } else {
+          result[selectorName] = {
+            [subSelectorName]: {}
+          }
+        }
+        for (let i in body) {
+          result[selectorName][subSelectorName][i] = body[i]
+        }
+      } else if (result[selectorName]) {
         for (let i in body) {
           result[selectorName][i] = body[i]
         }
