@@ -15,7 +15,7 @@
   "license": "MIT",
   "repository": "postcss/postcss-js",
   "scripts": {
-    "test": "jest-ci --coverage && eslint-ci ."
+    "test": "jest-ci --coverage && eslint-ci . --fix"
   },
   "engines": {
     "node": ">=10.0"

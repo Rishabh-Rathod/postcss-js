@@ -1,11 +1,11 @@
-let objectify = require('./objectifier')
-let parse = require('./parser')
+let jssObjectify = require('./src/jss/objectifier')
+let jssParse = require('./src/jss/parser')
 let async = require('./async')
 let sync = require('./sync')
 
 module.exports = {
-  objectify,
-  parse,
+  jssObjectify,
+  jssParse,
   async,
   sync
 }
