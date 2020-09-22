@@ -1,4 +1,4 @@
-let objectify = require('./objectifier')
+let objectify = require('./src/jss/objectifier')
 
 module.exports = function processResult (result) {
   if (console && console.warn) {

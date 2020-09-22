@@ -25,6 +25,11 @@ let UNITLESS = {
   strokeWidth: true
 }
 
+let ANIMATION_NAME_PROPERTY = {
+  animation: true,
+  animationName: true
+}
+
 function atRule (node) {
   if (typeof node.nodes === 'undefined') {
     return true
@@ -39,6 +44,7 @@ function process (node) {
 
   node.each(child => {
     if (child.type === 'atrule') {
+      // atRule includes mediaQueries, keyframes
       name = '@' + child.name
       if (child.params) name += ' ' + child.params
       if (typeof result[name] === 'undefined') {
@@ -49,9 +55,11 @@ function process (node) {
         result[name] = [result[name], atRule(child)]
       }
     } else if (child.type === 'rule') {
+      // css rule
       let body = process(child)
       let selectorName = child.selector
       let subSelectorName = ''
+
       if (selectorName.includes(':')) {
         let [className, subSelector] = selectorName.split(':')
         if (className !== '&') {
@@ -81,14 +89,20 @@ function process (node) {
         result[selectorName] = body
       }
     } else if (child.type === 'decl') {
+      // css declaration
       if (child.prop[0] === '-' && child.prop[1] === '-') {
         name = child.prop
       } else {
         name = camelcase(child.prop)
       }
       let value = child.value
-      if (!isNaN(child.value) && UNITLESS[name]) {
+      if (UNITLESS[name] && !isNaN(child.value)) {
+        // convert value from string to number for unitless css styles
         value = parseFloat(child.value)
+      }
+      if (ANIMATION_NAME_PROPERTY[name]) {
+        // add '$' symbol before animation style
+        value = '$' + child.value
       }
       if (child.important) value += ' !important'
       if (typeof result[name] === 'undefined') {

@@ -1,7 +1,12 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 3.0
+## 4.0.0
+* BREAKING CHANGE : Rename parse and objectifier methods according to cssinjs library.
+* Add JSS specific support.
+* Concatenate '$' symbol before animation name.
+
+## 3.0.0
 * Removed support for Node.js 6.x, 8.x, 11.x, and 13.x versions.
 * Moved to PostCSS 8.0.
 * Added ES modules support.
