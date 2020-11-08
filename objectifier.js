@@ -1,44 +1,26 @@
 let camelcase = require('camelcase-css')
 
-let UNITLESS = {
-  boxFlex: true,
-  boxFlexGroup: true,
-  columnCount: true,
-  flex: true,
-  flexGrow: true,
-  flexPositive: true,
-  flexShrink: true,
-  flexNegative: true,
-  fontWeight: true,
-  lineClamp: true,
-  lineHeight: true,
-  opacity: true,
-  order: true,
-  orphans: true,
-  tabSize: true,
-  widows: true,
-  zIndex: true,
-  zoom: true,
-  fillOpacity: true,
-  strokeDashoffset: true,
-  strokeOpacity: true,
-  strokeWidth: true
-}
+let UNITLESS = require('./constants')
 
 let ANIMATION_NAME_PROPERTY = {
   animation: true,
   animationName: true
 }
 
-function atRule (node) {
+// let OUTPUT_STYLE_TYPE = {
+//   STRING: 'string',
+//   OBJECT: 'object'
+// }
+
+function atRule (node, parameters = {}) {
   if (typeof node.nodes === 'undefined') {
     return true
   } else {
-    return process(node)
+    return process(node, parameters)
   }
 }
 
-function process (node) {
+function process (node, parameters = {}) {
   let name
   let result = {}
 
@@ -48,15 +30,15 @@ function process (node) {
       name = '@' + child.name
       if (child.params) name += ' ' + child.params
       if (typeof result[name] === 'undefined') {
-        result[name] = atRule(child)
+        result[name] = atRule(child, parameters)
       } else if (Array.isArray(result[name])) {
-        result[name].push(atRule(child))
+        result[name].push(atRule(child, parameters))
       } else {
         result[name] = [result[name], atRule(child)]
       }
     } else if (child.type === 'rule') {
       // css rule
-      let body = process(child)
+      let body = process(child, parameters)
       let selectorName = child.selector
       let subSelectorName = ''
 
@@ -90,13 +72,24 @@ function process (node) {
       }
     } else if (child.type === 'decl') {
       // css declaration
+
       if (child.prop[0] === '-' && child.prop[1] === '-') {
         name = child.prop
       } else {
-        name = camelcase(child.prop)
+        switch (parameters.ouputStyleType) {
+          // case OUTPUT_STYLE_TYPE.STRING:
+          //   name = child.prop
+          //   break
+          // case OUTPUT_STYLE_TYPE.OBJECT:
+          //   name = camelcase(child.prop)
+          //   break
+          default:
+            name = camelcase(child.prop)
+            break
+        }
       }
       let value = child.value
-      if (UNITLESS[name] && !isNaN(child.value)) {
+      if (UNITLESS[child.prop] && !isNaN(child.value)) {
         // convert value from string to number for unitless css styles
         value = parseFloat(child.value)
       }
