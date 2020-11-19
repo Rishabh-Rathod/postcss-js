@@ -4,7 +4,7 @@ let postcssJS = require('../..')
 
 it('converts declaration', () => {
   let root = parse('color: black')
-  expect(postcssJS.convert(root)).toEqual({ color: 'black' })
+  expect(postcssJS.convert(root)).toEqual(`color: 'black'`)
 })
 
 it('converts declarations to array', () => {
@@ -31,23 +31,19 @@ it('converts at-rules to array', () => {
 
 it('converts declarations to camel case', () => {
   let root = parse('-webkit-z-index: 1; -ms-z-index: 1; z-index: 1')
-  expect(postcssJS.convert(root)).toEqual({
-    WebkitZIndex: '1',
-    msZIndex: '1',
-    zIndex: 1
-  })
+  expect(postcssJS.convert(root)).toEqual(`WebkitZIndex: '1',
+msZIndex: '1',
+zIndex: 1`)
 })
 
 it('maintains !important declarations', () => {
   let root = parse('margin-bottom: 0 !important')
-  expect(postcssJS.convert(root)).toEqual({
-    marginBottom: '0 !important'
-  })
+  expect(postcssJS.convert(root)).toEqual(`marginBottom: '0 !important'`)
 })
 
 it('ignores comments', () => {
   let root = parse('color: black; /* test */')
-  expect(postcssJS.convert(root)).toEqual({ color: 'black' })
+  expect(postcssJS.convert(root)).toEqual(`color: 'black'`)
 })
 
 it('converts rules', () => {
@@ -106,32 +102,24 @@ it('does fall on at-rules in rules merge', () => {
 
 it('converts at-rules without body', () => {
   let root = parse('@charset "UTF-8"')
-  expect(postcssJS.convert(root)).toEqual({
-    '@charset "UTF-8"': true
-  })
+  expect(postcssJS.convert(root)).toEqual(`@charset "UTF-8": true`)
 })
 
 it('handles mixed case properties', () => {
   let root = parse('COLOR: green; -WEBKIT-border-radius: 6px')
-  expect(postcssJS.convert(root)).toEqual({
-    color: 'green',
-    WebkitBorderRadius: '6px'
-  })
+  expect(postcssJS.convert(root)).toEqual(`color: 'green',
+WebkitBorderRadius: '6px'`)
 })
 
 it("doesn't convert css variables", () => {
   let root = parse('--test-variable: 0;')
-  expect(postcssJS.convert(root)).toEqual({
-    '--test-variable': '0'
-  })
+  expect(postcssJS.convert(root)).toEqual(`--test-variable: '0'`)
 })
 
 it('converts unitless value to number instead of string', () => {
   let root = parse('z-index: 100; opacity: .1;')
-  expect(postcssJS.convert(root)).toEqual({
-    zIndex: 100,
-    opacity: 0.1
-  })
+  expect(postcssJS.convert(root)).toEqual(`zIndex: 100,
+opacity: 0.1`)
 })
 
 it('remove period `.` from css classname', () => {

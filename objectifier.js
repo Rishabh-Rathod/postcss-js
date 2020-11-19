@@ -16,11 +16,11 @@ function atRule (node, parameters = {}) {
   if (typeof node.nodes === 'undefined') {
     return true
   } else {
-    return process(node, parameters)
+    return process(node, parameters, false)
   }
 }
 
-function process (node, parameters = {}) {
+function process (node, parameters = {}, mainProcess = true) {
   let name
   let result = {}
 
@@ -38,7 +38,7 @@ function process (node, parameters = {}) {
       }
     } else if (child.type === 'rule') {
       // css rule
-      let body = process(child, parameters)
+      let body = process(child, parameters, false)
       let selectorName = child.selector
       let subSelectorName = ''
 
@@ -107,7 +107,31 @@ function process (node, parameters = {}) {
       }
     }
   })
-  return result
+  let newResult = result
+  if (mainProcess) {
+    newResult = ''
+    let values = Object.values(result)
+    let keys = Object.keys(result)
+
+    let hasObject = false
+    for (let [index, element] of values.entries()) {
+      if (typeof element === 'object') {
+        hasObject = true
+        break
+      } else {
+        let endline = index === keys.length - 1 ? '' : ',\n'
+        if (typeof element === 'string') {
+          newResult += `${keys[index]}: '${element}'${endline}`
+        } else {
+          newResult += `${keys[index]}: ${element}${endline}`
+        }
+      }
+    }
+    if (hasObject) {
+      newResult = result
+    }
+  }
+  return newResult
 }
 
 module.exports = process
